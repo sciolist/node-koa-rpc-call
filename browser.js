@@ -57,6 +57,9 @@ function toBody(data) {
 }
 function readBody(contentType, response) {
     return Promise.resolve(null).then(function readyBodyInner() {
+        if (!contentType || /^application\/undefined/.test(contentType)) {
+            return;
+        }
         if (/^application\/json/.test(contentType)) {
             return response.json();
         }

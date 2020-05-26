@@ -24,7 +24,8 @@ async function createBody(result) {
         return value;
     });
     if (files.length === 0) {
-        return { body: json, headers: { 'Content-Type': 'application/json' } };
+        const contentType = 'application/' + (json === undefined ? 'undefined' : 'json');
+        return { body: json, headers: { 'Content-Type': contentType } };
     }
     const formData = new FormData();
     formData.append('json', json);
@@ -44,6 +45,9 @@ function toBody(data) {
     return data;
 }
 async function readBody(contentType, response) {
+    if (!contentType || /^application\/undefined/.test(contentType)) {
+        return;
+    }
     if (/^application\/json/.test(contentType)) {
         return await response.json();
     }
@@ -153,7 +157,7 @@ async function callRpcMethod(ctx, next) {
     return await next();
 }
 async function setRpcResponse(ctx, next) {
-    if (ctx.body === undefined && ctx.rpcBody !== undefined) {
+    if (ctx.body === undefined) {
         let rpcBody = ctx.rpcBody;
         const response = await createBody(rpcBody);
         ctx.status = response.body === undefined ? 204 : 200;
