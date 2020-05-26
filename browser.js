@@ -118,7 +118,7 @@ function defaultApiInvoker(className, methodName, rpcParameters, rpcConfiguratio
         }
         return createdBody.then(function (bodyInfo) {
             if (bodyInfo && bodyInfo.headers) {
-                Object.assign(requestHeaders, headers);
+                Object.assign(requestHeaders, bodyInfo.headers);
             }
             var requestInfo = {
                 url: urlPrefix + urlName + requestQuery,
@@ -138,15 +138,15 @@ function defaultApiInvoker(className, methodName, rpcParameters, rpcConfiguratio
 }
 function finishRequest(requestInfo) {
     return Promise.resolve(null).then(function finishRequestBody() {
-        resolve(fetch(requestInfo.url, requestInfo).then(function (response) {
+        return fetch(requestInfo.url, requestInfo).then(function (response) {
             if (response.status >= 300) {
-                rpcError = new Error(requestInfo.url + " failed, HTTP " + response.status);
+                var rpcError = new Error(requestInfo.url + " failed, HTTP " + response.status);
                 rpcError.requestInfo = requestInfo;
                 rpcError.response = response;
                 throw rpcError;
             }
             return readBody(response.headers.get('content-type'), response);
-        }));
+        });
     });
 }
 function createRpcProxy(className, methodName, rpcConfiguration) {

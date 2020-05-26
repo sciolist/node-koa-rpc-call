@@ -1,6 +1,6 @@
 {
   "name": "koa-rpc-call",
-  "version": "0.1.12",
+  "version": "0.1.16",
   "license": "ISC",
   "browser": "./browser.js",
   "main": "./server.js",
